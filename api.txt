@@ -1,0 +1,159 @@
+API for the communication between mensa_server and mensa_app
+------------------------------------------------------------
+
+All requests are sent by HTTP(S) to the following URLs with the according parameters.
+The result is given as JSON in the HTTP response.
+Errors are expressed with HTTP status codes.
+
+  Example: Hold up request
+  - Request:
+    GET /holdup?p=mensa
+    Host: www.example.org
+
+  - Response:
+    HTTP/1.0 200 OK
+    ...
+    true
+
+Hold ups:
+---------
+
+/holdup GET
+Ask, if there is a holdup.
+  params: p - place
+  result: true/false
+
+/signalholdup POST
+Signal a holdup.
+  params: id - userid
+          pw - password
+          pl - place
+  result: -
+
+/holdupsignaled GET
+Query your signal state (is your hold up signal still active?)
+  params: -
+  result: true/false
+
+Locations:
+----------
+
+/locations GET
+Query the locations of your contacts.
+  params: id - userid
+          pw - password
+          pl - place
+  result: [{name:name,loc:{x:xpos,y:ypos}}]
+
+/setlocation POST
+Post your own location.
+  params: id  - userid
+          pw  - password
+          pos - {x:xpos, y:ypos}
+          pl  - place
+          exp - timestamp
+  result: -
+
+/mylocation GET
+Query your location.
+  params: id - userid
+          pw - password
+  result: {pos:{x:xpos,y:ypos},pl:place}/null
+
+/removelocation POST
+Remove your location manually.
+  params: id - userid
+          pw - password
+  result: -
+
+/places GET
+List all places.
+  params: -
+  result: [place]
+
+Account management:
+-------------------
+
+/register POST
+Register a new account.
+A mail is being sent with a random activation code.
+  params: mail - email address
+          pw   - password
+          name - a name/nickname
+  result: -
+
+/activate POST
+Activate a new account
+The activation code is being sent by mail after registration.
+  params: mail - email address
+          code - activation code.
+  result: id
+
+/unregister POST
+Delete your account.
+  params: id - user id
+          pw - password
+  result: -
+
+/getid GET
+Query your user id.
+  params: mail - email address
+          pw   - password
+  result: id
+
+/getinfo GET
+Get the name behind a given user id.
+  params: id - my user id
+          pw - password
+          ri - the requested user's id.
+  result: {name:name}
+
+Contacts:
+---------
+
+/search GET
+Search contacts.
+  params: term - search term
+  result: [{name:username,id:userid}]
+
+/subscribe POST
+Subscribe to a user (make it a new contact).
+Subscriptions have to be mutual, so it's not valid until the other user has confirmed it via /accept.
+  params: id - my user id
+          pw - password
+          ci - the contact's user id
+  result: -
+
+/refuse POST
+Refuse subscription.
+  params: id - my user id
+          pw - password
+          ci - the contact's user id
+  result: -
+
+/accept POST
+Accept subscription.
+  params: id - my user id
+          pw - password
+          ci - the contact's user id
+  result: -
+
+/unsubscribe POST
+Well, unsubscribe.
+This is again mutual.
+  params: id - my user id
+          pw - password
+          ci - the contact's user id
+  result: -
+
+/enquiries GET
+Returns all subscription enquiries you have to accept or refuse.
+  params: id - user id
+          pw - password
+  result: [userid]
+
+/contacts GET
+Returns all your contacts.
+  params: id - user id
+          pw - password
+  result: [userid]
