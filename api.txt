@@ -32,7 +32,9 @@ Signal a holdup.
 
 /holdupsignaled GET
 Query your signal state (is your hold up signal still active?)
-  params: -
+  params: id - userid
+          pw - password
+          pl - place
   result: true/false
 
 Locations:
