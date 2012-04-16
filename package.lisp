@@ -1,4 +1,5 @@
 ;;;; package.lisp
 
 (defpackage #:m-server
-  (:use #:cl))
+  (:use #:cl)
+  (:export #:start-http-server #:stop-server))
