@@ -4,7 +4,8 @@
   :serial t
   :depends-on (#:hunchentoot)
   :components ((:file "package")
-	       (:file "holdups")
+	       (:file "backend-api")
+	       (:file "mem-backend")
 	       (:file "server")
                (:file "m-server"))
   :description "m-server is a CL server for the Socialunch app."

@@ -1,4 +1,4 @@
-;;;; holdups.lisp
+;;;; mem-backend.lisp
 
 (in-package #:m-server)
 
@@ -6,37 +6,37 @@
 
 (defvar *hu-signals* nil
   "A list of all holdup signals")
-(defparameter *hu-exp-time* 60
-  "The expiration time of a holdup signal in seconds.")
-(defparameter *hu-threshold* 3
-  "The required number of signals for a holdup.")
 
-(defun expire-signals ()
+(defclass plain-backend ()
+  ((hu-signals :initform nil
+	       :accessor hu-signals)))
+
+(defun expire-signals (backend)
   "Remove expired signals."
   (let ((now (- (get-universal-time) *hu-exp-time*)))
-    (setf *hu-signals*
+    (setf (hu-signals backend)
 	  (remove-if (lambda (entry)
 		       (< (car entry) now))
-		     *hu-signals*))))
+		     (hu-signals backend)))))
 
-(defun holdup-signaled? (user-id place)
+(defmethod holdup-signaled? ((backend plain-backend) user-id place)
   "Has the user an active signal?"
-  (expire-signals)
+  (expire-signals backend)
   (when (member-if (lambda (s)
 		     (and (equal user-id (cadr s))
 			  (equal place (caddr s))))
-		   *hu-signals*)
+		   (hu-signals backend))
     t))
 
-(defun signal-holdup (user-id place)
+(defmethod signal-holdup ((backend plain-backend) user-id place)
   "Signal a holdup."
-  (unless (holdup-signaled? user-id)
+  (unless (holdup-signaled? backend user-id place)
     (push (list (get-universal-time) user-id place)
-	  *hu-signals*)))
+	  (hu-signals backend))))
 
-(defun holdup? (place)
+(defmethod holdup? ((backend plain-backend) place)
   "Is there a holdup?"
-  (expire-signals)
+  (expire-signals backend)
   (>= (length (remove-if-not (lambda (s) (equal place (caddr s)))
-			     *hu-signals*))
+			     (hu-signals backend)))
       *hu-threshold*))
