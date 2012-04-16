@@ -2,8 +2,6 @@
 
 (in-package #:m-server)
 
-;;; holdups.lisp goes here.
-
 (defvar *hu-signals* nil
   "A list of all holdup signals")
 
