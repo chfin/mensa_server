@@ -1,1 +1,3 @@
-This is the stub README.txt for the "m-server" project.
+mensa_server is a Common Lisp server for the Socialunch app (mensa_app).
+It defines an ASDF named called "m-server".
+For the interface definition see api.txt.
