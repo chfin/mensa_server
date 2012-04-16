@@ -8,7 +8,7 @@ Usage:
 ------
 
 You can load mensa_server as an ASDF system called `m-server`.
-It currently defines two public functions:
+It currently exports two functions:
 
 * `start-http-server`
   Starts the server loop with http.
