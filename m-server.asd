@@ -5,6 +5,7 @@
   :depends-on (#:hunchentoot)
   :components ((:file "package")
 	       (:file "holdups")
+	       (:file "server")
                (:file "m-server"))
   :description "m-server is a CL server for the Socialunch app."
   :author "Christoph Finkensiep <ch.finkensiep@freenet.de>"

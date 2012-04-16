@@ -19,20 +19,24 @@
 		       (< (car entry) now))
 		     *hu-signals*))))
 
-(defun holdup-signaled? (user-id)
+(defun holdup-signaled? (user-id place)
   "Has the user an active signal?"
   (expire-signals)
-  (when (member-if (lambda (a) (equal user-id (cdr a)))
+  (when (member-if (lambda (s)
+		     (and (equal user-id (cadr s))
+			  (equal place (caddr s))))
 		   *hu-signals*)
     t))
 
-(defun signal-holdup (user-id)
+(defun signal-holdup (user-id place)
   "Signal a holdup."
   (unless (holdup-signaled? user-id)
-    (push (cons (get-universal-time) user-id)
+    (push (list (get-universal-time) user-id place)
 	  *hu-signals*)))
 
-(defun holdup? ()
+(defun holdup? (place)
   "Is there a holdup?"
   (expire-signals)
-  (>= (length *hu-signals*) *hu-threshold*))
+  (>= (length (remove-if-not (lambda (s) (equal place (caddr s)))
+			     *hu-signals*))
+      *hu-threshold*))
