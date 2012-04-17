@@ -4,22 +4,28 @@
 
 (defvar *backend* (make-instance 'plain-backend))
 
-(hunchentoot:define-easy-handler (holdup :uri "/holdup")
-    (p)
-  (setf (hunchentoot:content-type*) "application/json")
+(defmacro defget (name (&rest params) &body body)
+  `(hunchentoot:define-easy-handler (,name)
+       ,params
+     (setf (hunchentoot:content-type*) "application/json")
+     ,@body))
+
+(defmacro defpost (name (&rest params) &body body)
+  `(hunchentoot:define-easy-handler (,name)
+       ,params
+     ,@body
+     nil))
+
+(defget holdup (p)
   (if (holdup? *backend* p)
       "true"
       "false"))
 
-(hunchentoot:define-easy-handler (signalholdup :uri "/signalholdup")
-    (id pw pl)
-  (when (authenticate *backend* id pw)
-    (signal-holdup *backend* id pl))
-  nil)
+(defpost signalholdup (id pw pl)
+	 (when (authenticate *backend* id pw)
+	   (signal-holdup *backend* id pl)))
 
-(hunchentoot:define-easy-handler (holdupsignaled :uri "/holdupsignaled")
-    (id pw pl)
-  (setf (hunchentoot:content-type*) "application/json")
+(defget holdupsignaled (id pw pl)
   (when (authenticate *backend* id pw)
     (if (holdup-signaled? *backend* id pl)
 	"true"

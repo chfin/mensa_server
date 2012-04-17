@@ -89,7 +89,7 @@ Activate a new account
 The activation code is being sent by mail after registration.
   params: mail - email address
           code - activation code.
-  result: id
+  result: -
 
 /unregister POST
 Delete your account.
