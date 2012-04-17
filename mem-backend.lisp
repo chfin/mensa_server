@@ -64,17 +64,22 @@
 		   (equal id (car a)))
 		 (accounts backend))))
 
-(defmethod new-account ((backend plain-backend) name pw mail)
+(defmethod new-account ((backend plain-backend) mail pw name)
   (let ((code (format nil "~a" (random 65535))))
     (format t "This is the activation code for ~a <~a>: ~a~%" name mail code)
-    (push (list code mail pw name) (candidates backend))))
+    (push (list code mail pw name) (candidates backend))
+    code))
 
 (defmethod activate-account ((backend plain-backend) mail code)
-  (let ((cnd (find-if (lambda (c)
+  (let* ((cnd (find-if (lambda (c)
 			(and (equal code (car c))
 			     (equal mail (cadr c))))
 		      (candidates backend)))
-	(new-id 1));;FIXME
+	 (max (reduce #'max
+		      (mapcar (lambda (a)
+				(read-from-string (car a)))
+			      (accounts backend))))
+	 (new-id (format nil "~a" (1+ max))))
     (when cnd
       (setf (candidates backend)
 	    (remove-if (lambda (c)
@@ -82,7 +87,7 @@
 		       (candidates backend)))
       (push (cons new-id (cdr cnd)) (accounts backend)))))
 
-(defmethod remove-account ((backend plain-backend) id)
+(defmethod delete-account ((backend plain-backend) id)
   (setf (accounts backend)
 	(remove-if (lambda (a)
 		     (equal id (car a)))

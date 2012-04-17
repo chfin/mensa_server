@@ -45,3 +45,13 @@
 (defget getinfo (id pw ri)
   (do-auth (id pw)
     (get-info *backend* ri)))
+
+(defget register (mail pw name)
+	 (new-account *backend* mail pw name))
+
+(defpost activate (mail code)
+	 (activate-account *backend* mail code))
+
+(defpost unregister (id pw)
+	 (do-auth (id pw)
+	   (delete-account *backend* id)))
