@@ -2,19 +2,25 @@
 
 (in-package #:m-server)
 
-(defvar *backend* (make-instance 'plain-backend))
+(defparameter *backend* (make-instance 'plain-backend))
 
 (defmacro defget (name (&rest params) &body body)
-  `(hunchentoot:define-easy-handler (,name)
+  `(hunchentoot:define-easy-handler (,name :uri ,(format nil "/~(~a~)" name))
        ,params
      (setf (hunchentoot:content-type*) "application/json")
      ,@body))
 
 (defmacro defpost (name (&rest params) &body body)
-  `(hunchentoot:define-easy-handler (,name)
+  `(hunchentoot:define-easy-handler (,name :uri ,(format nil "/~(~a~)" name))
        ,params
      ,@body
      nil))
+
+(defmacro do-auth ((id pw) &body body)
+  `(when (authenticate *backend* ,id ,pw)
+     ,@body))
+
+;;;holdups
 
 (defget holdup (p)
   (if (holdup? *backend* p)
@@ -22,11 +28,20 @@
       "false"))
 
 (defpost signalholdup (id pw pl)
-	 (when (authenticate *backend* id pw)
+	 (do-auth (id pw)
 	   (signal-holdup *backend* id pl)))
 
 (defget holdupsignaled (id pw pl)
-  (when (authenticate *backend* id pw)
+  (do-auth (id pw)
     (if (holdup-signaled? *backend* id pl)
 	"true"
 	"false")))
+
+;;; accounts
+
+(defget getid (mail pw)
+  (get-id *backend* mail pw))
+
+(defget getinfo (id pw ri)
+  (do-auth (id pw)
+    (get-info *backend* ri)))

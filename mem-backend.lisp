@@ -8,7 +8,7 @@
 (defclass plain-backend ()
   ((hu-signals :initform nil
 	       :accessor hu-signals)
-   (accounts :initform '(1 "ich" "password" "ich@ich.de")
+   (accounts :initform '(("1" "ich" "password" "ich@ich.de"))
 	     :accessor accounts)))
 
 ;;; holdups
@@ -50,3 +50,14 @@
 			  (equal pw (caddr a))))
 		   (accounts backend))
     t))
+
+(defmethod get-id ((backend plain-backend) mail pw)
+  (car (find-if (lambda (a)
+		  (and (equal mail (cadddr a))
+		       (equal pw (caddr a))))
+		(accounts backend))))
+
+(defmethod get-info ((backend plain-backend) id)
+  (cadr (find-if (lambda (a)
+		   (equal id (car a)))
+		 (accounts backend))))

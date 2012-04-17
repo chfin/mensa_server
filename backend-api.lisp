@@ -10,4 +10,7 @@
 (defgeneric holdup-signaled? (backend user-id place))
 (defgeneric signal-holdup (backend user-id place))
 (defgeneric holdup? (backend place))
+
 (defgeneric authenticate (backtend id pw))
+(defgeneric get-id (backend mail pw))
+(defgeneric get-info (backend id))
