@@ -14,3 +14,7 @@
 (defgeneric authenticate (backtend id pw))
 (defgeneric get-id (backend mail pw))
 (defgeneric get-info (backend id))
+
+(defgeneric new-account (backend name pw mail))
+(defgeneric activate-account (backend mail code))
+(defgeneric delete-account (backend id))

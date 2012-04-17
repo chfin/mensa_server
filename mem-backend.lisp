@@ -8,8 +8,10 @@
 (defclass plain-backend ()
   ((hu-signals :initform nil
 	       :accessor hu-signals)
-   (accounts :initform '(("1" "ich" "password" "ich@ich.de"))
-	     :accessor accounts)))
+   (accounts :initform '(("1" "ich@ich.de" "password" "ich"))
+	     :accessor accounts)
+   (candidates :initform nil
+	       :accessor candidates )))
 
 ;;; holdups
 (defun expire-signals (backend)
@@ -53,7 +55,7 @@
 
 (defmethod get-id ((backend plain-backend) mail pw)
   (car (find-if (lambda (a)
-		  (and (equal mail (cadddr a))
+		  (and (equal mail (cadr a))
 		       (equal pw (caddr a))))
 		(accounts backend))))
 
@@ -61,3 +63,27 @@
   (cadr (find-if (lambda (a)
 		   (equal id (car a)))
 		 (accounts backend))))
+
+(defmethod new-account ((backend plain-backend) name pw mail)
+  (let ((code (format nil "~a" (random 65535))))
+    (format t "This is the activation code for ~a <~a>: ~a~%" name mail code)
+    (push (list code mail pw name) (candidates backend))))
+
+(defmethod activate-account ((backend plain-backend) mail code)
+  (let ((cnd (find-if (lambda (c)
+			(and (equal code (car c))
+			     (equal mail (cadr c))))
+		      (candidates backend)))
+	(new-id 1));;FIXME
+    (when cnd
+      (setf (candidates backend)
+	    (remove-if (lambda (c)
+			 (equal mail (cadr c)))
+		       (candidates backend)))
+      (push (cons new-id (cdr cnd)) (accounts backend)))))
+
+(defmethod remove-account ((backend plain-backend) id)
+  (setf (accounts backend)
+	(remove-if (lambda (a)
+		     (equal id (car a)))
+		   (accounts backend))))
