@@ -7,8 +7,11 @@
 
 (defclass plain-backend ()
   ((hu-signals :initform nil
-	       :accessor hu-signals)))
+	       :accessor hu-signals)
+   (accounts :initform '(1 "ich" "password" "ich@ich.de")
+	     :accessor accounts)))
 
+;;; holdups
 (defun expire-signals (backend)
   "Remove expired signals."
   (let ((now (- (get-universal-time) *hu-exp-time*)))
@@ -38,3 +41,12 @@
   (>= (length (remove-if-not (lambda (s) (equal place (caddr s)))
 			     (hu-signals backend)))
       *hu-threshold*))
+
+;;; accounts
+
+(defmethod authenticate ((backend plain-backend) id pw)
+  (when (member-if (lambda (a)
+		     (and (equal id (car a))
+			  (equal pw (caddr a))))
+		   (accounts backend))
+    t))
