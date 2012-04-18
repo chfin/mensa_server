@@ -2,7 +2,7 @@
 
 (asdf:defsystem #:m-server
   :serial t
-  :depends-on (#:hunchentoot)
+  :depends-on (#:hunchentoot #:cl-json)
   :components ((:file "package")
 	       (:file "backend-api")
 	       (:file "mem-backend")

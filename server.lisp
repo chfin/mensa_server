@@ -55,3 +55,13 @@
 (defpost unregister (id pw)
 	 (do-auth (id pw)
 	   (delete-account *backend* id)))
+
+(defget search_acc (term)
+  (json:encode-json-to-string (search-accounts *backend* term)))
+
+;;; locations
+
+(defget places ()
+  (json:encode-json-to-string (get-places *backend*)))
+
+;;; contacts
