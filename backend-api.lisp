@@ -22,5 +22,12 @@
 (defgeneric new-account (backend mail pw name))
 (defgeneric activate-account (backend mail code))
 (defgeneric delete-account (backend user-id))
-
 (defgeneric search-accounts (backend term))
+
+(defgeneric subscr (backend user-id contact-id))
+(defgeneric unsubscr (backend user-id contact-id))
+(defgeneric get-contacs (backend user-id))
+
+(defgeneric get-enquiries (backend user-id))
+(defgeneric accept-enq (backend user-id contact-id))
+(defgeneric refuse-enq (backend user-id contact-id))

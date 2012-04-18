@@ -2,13 +2,13 @@
 
 (in-package #:m-server)
 
-(defparameter *backend* (make-instance 'plain-backend))
+(defvar *backend* (make-instance 'plain-backend))
 
 (defmacro defget (name (&rest params) &body body)
   `(hunchentoot:define-easy-handler (,name :uri ,(format nil "/~(~a~)" name))
        ,params
-     (setf (hunchentoot:content-type*) "application/json")
-     ,@body))
+     ;(setf (hunchentoot:content-type*) "application/json")
+     (json:encode-json-to-string (progn ,@body))))
 
 (defmacro defpost (name (&rest params) &body body)
   `(hunchentoot:define-easy-handler (,name :uri ,(format nil "/~(~a~)" name))
@@ -57,11 +57,35 @@
 	   (delete-account *backend* id)))
 
 (defget search_acc (term)
-  (json:encode-json-to-string (search-accounts *backend* term)))
+  (search-accounts *backend* term))
 
 ;;; locations
 
 (defget places ()
-  (json:encode-json-to-string (get-places *backend*)))
+  (get-places *backend*))
 
 ;;; contacts
+
+(defpost subscribe (id pw ci)
+	 (do-auth (id pw)
+	   (subscr *backend* id ci)))
+
+(defpost unsubscribe (id pw ci)
+	 (do-auth (id pw)
+	   (unsubscr *backend* id ci)))
+
+(defget contacts (id pw)
+  (do-auth (id pw)
+    (get-contacts *backend* id)))
+
+(defget enquiries (id pw)
+  (do-auth (id pw)
+    (get-enquiries *backend* id)))
+
+(defpost accept (id pw ci)
+	 (do-auth (id pw)
+	   (accept-enq *backend* id ci)))
+
+(defpost refuse (id pw ci)
+	 (do-auth (id pw)
+	   (refuse-enq *backend* id ci)))

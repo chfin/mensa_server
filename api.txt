@@ -113,7 +113,7 @@ Get the name behind a given user id.
 Contacts:
 ---------
 
-/search GET
+/search_acc GET
 Search contacts.
   params: term - search term
   result: [{name:username,id:userid}]

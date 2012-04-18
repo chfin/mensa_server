@@ -11,7 +11,11 @@
    (accounts :initform '((1 "ich@ich.de" "password" "ich"))
 	     :accessor accounts)
    (candidates :initform nil
-	       :accessor candidates)))
+	       :accessor candidates)
+   (enquiries :initform nil
+	      :accessor enqs)
+   (contacts :initform nil
+	     :accessor conts)))
 
 ;;; holdups
 (defun expire-signals (backend)
@@ -107,3 +111,53 @@
     (mapcar (lambda (s)
 	      (list (cons :name (car s)) (cons :id (cdr s))))
 	    sorted)))
+
+(defun contact-pair (id1 id2)
+  (let ((i1 (parse-integer id1))
+	(i2 (parse-integer id2)))
+    (if (< i1 i2) (cons i1 i2) (cons i2 i1))))
+
+(defmethod subscr ((backend plain-backend) user-id contact-id)
+  (let ((enq (cons (parse-integer contact-id)
+		   (parse-integer user-id)))
+	(cp (contact-pair user-id contact-id)))
+    (unless (member cp (conts backend) :test #'equal)
+      (pushnew enq (enqs backend) :test #'equal))))
+
+(defmethod unsubscr ((backend plain-backend) user-id contact-id)
+  (setf (conts backend)
+	(delete (contact-pair user-id contact-id)
+		(conts backend) :test #'equal)))
+
+(defmethod get-contacts ((backend plain-backend) user-id)
+  (let* ((id (parse-integer user-id))
+	 (cs (remove-if-not (lambda (c)
+			      (or (equal id (car c))
+				  (equal id (cdr c))))
+			    (conts backend))))
+    (mapcar (lambda (c)
+	      (if (equal id (car c))
+		  (cdr c)
+		  (car c)))
+	    cs)))
+
+(defmethod get-enquiries ((backend plain-backend) user-id)
+  (let* ((id (parse-integer user-id))
+	 (enq (remove-if-not (lambda (e) (equal id (car e)))
+			     (enqs backend))))
+    (mapcar #'cdr enq)))
+
+(defmethod accept-enq ((backend plain-backend) user-id contact-id)
+  (let ((enq (cons (parse-integer user-id)
+		   (parse-integer contact-id)))
+	(cp (contact-pair user-id contact-id)))
+    (princ enq)
+    (when (member enq (enqs backend) :test #'equal)
+      (princ "inner")
+      (setf (enqs backend) (delete enq (enqs backend) :test #'equal))
+      (pushnew cp (conts backend) :test #'equal))))
+
+(defmethod refuse-enq ((backend plain-backend) user-id contact-id)
+  (let ((enq (cons (parse-integer user-id)
+		   (parse-integer contact-id))))
+    (setf (enqs backend) (delete enq (enqs backend) :test #'equal))))
