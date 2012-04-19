@@ -4,21 +4,8 @@
 
 (defvar *backend* (make-instance 'plain-backend))
 
-(defmacro defget (name (&rest params) &body body)
-  `(hunchentoot:define-easy-handler (,name :uri ,(format nil "/~(~a~)" name))
-       ,params
-     ;(setf (hunchentoot:content-type*) "application/json")
-     (json:encode-json-to-string (progn ,@body))))
-
-(defmacro defpost (name (&rest params) &body body)
-  `(hunchentoot:define-easy-handler (,name :uri ,(format nil "/~(~a~)" name))
-       ,params
-     ,@body
-     nil))
-
-(defmacro do-auth ((id pw) &body body)
-  `(when (authenticate *backend* ,id ,pw)
-     ,@body))
+(defget echo (p)
+  (format nil "You said: ~a" p))
 
 ;;;holdups
 

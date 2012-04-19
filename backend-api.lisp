@@ -11,6 +11,10 @@
   ((places :initform '("mensa" "pub")
 	   :reader get-places)))
 
+(defmacro do-auth ((id pw) &body body)
+  `(when (authenticate *backend* ,id ,pw)
+     ,@body))
+
 (defgeneric holdup-signaled? (backend user-id place))
 (defgeneric signal-holdup (backend user-id place))
 (defgeneric holdup? (backend place))
