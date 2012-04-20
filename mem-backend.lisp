@@ -2,9 +2,6 @@
 
 (in-package #:m-server)
 
-(defvar *hu-signals* nil
-  "A list of all holdup signals")
-
 (defclass plain-backend (base-backend)
   ((hu-signals :initform nil
 	       :accessor hu-signals)
