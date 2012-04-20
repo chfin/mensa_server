@@ -1,6 +1,6 @@
 # README
 
-mensa_server is a Common Lisp server for the Socialunch app (mensa_app).
+**mensa_server** is a Common Lisp server for the [Socialunch](https://github.com/chfin/mensa_app) app.
 For the interface definition see api.txt.
 
 ## Installation
@@ -8,7 +8,7 @@ For the interface definition see api.txt.
 This server is written in [Common Lisp](http://en.wikipedia.org/wiki/Common_Lisp), so you need a CL implementation.
 It currently has only been tested on [SBCL](http://www.sbcl.org/), but it _should_ run on any conforming implementation, like [CLISP](http://www.clisp.org/) or [ClozureCL](http://ccl.clozure.com/).
 
-mensa_server defines some asdf systems which you can load easily with [Quicklisp](http://www.quicklisp.org/).
+**mensa_server** defines some asdf systems which you can load easily with [Quicklisp](http://www.quicklisp.org/).
 The one you most probably want to use is `m-server` which uses [hunchentoot](http://weitz.de/hunchentoot/) as the http frontend.
 To use [teepeedee2](https://github.com/vii/teepeedee2) as a frontend, load `m-server-tpd2`.
 Finally there is `m-server-core` which is the part shared by the two, you probably don't want to load it.
