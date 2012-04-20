@@ -8,7 +8,8 @@ Usage:
 ------
 
 You can load mensa_server as an ASDF system called `m-server`.
-It currently exports two functions:
+Alternatively there is a system called `m-server-tpd2` which uses teepeedee2 as a frontend.
+The package `m-server` currently exports two functions:
 
 * `start-http-server`
   Starts the server loop with http.
