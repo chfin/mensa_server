@@ -53,7 +53,7 @@ Post your own location.
           pw  - password
           pos - {x:xpos, y:ypos}
           pl  - place
-          exp - timestamp
+          dur - how long is it valid [seconds]
   result: -
 
 /mylocation GET
