@@ -51,7 +51,7 @@ Query the locations of your contacts.
 Post your own location.
   params: id  - userid
           pw  - password
-          pos - {x:xpos, y:ypos}
+          pos - {"x":xpos, "y":ypos}
           pl  - place
           dur - how long is it valid [seconds]
   result: -
@@ -60,7 +60,7 @@ Post your own location.
 Query your location.
   params: id - userid
           pw - password
-  result: {pos:{x:xpos,y:ypos},pl:place}/null
+  result: {"pos":{"x":xpos,"y":ypos},"pl":place}/null
 
 /removelocation POST
 Remove your location manually.
@@ -108,7 +108,7 @@ Get the name behind a given user id.
   params: id - my user id
           pw - password
           ri - the requested user's id.
-  result: {name:name}
+  result: {"name":name}
 
 Contacts:
 ---------
@@ -116,7 +116,7 @@ Contacts:
 /search_acc GET
 Search contacts.
   params: term - search term
-  result: [{name:username,id:userid}]
+  result: [{"name":username,"id":userid}]
 
 /subscribe POST
 Subscribe to a user (make it a new contact).
