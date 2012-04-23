@@ -45,7 +45,7 @@ Query the locations of your contacts.
   params: id - userid
           pw - password
           pl - place
-  result: [{name:name,loc:{x:xpos,y:ypos}}]
+  result: [{id:id,loc:{x:xpos,y:ypos}}]
 
 /setlocation POST
 Post your own location.
