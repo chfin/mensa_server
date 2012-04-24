@@ -4,11 +4,14 @@
   :serial t
   :depends-on (#:cl-json #:levenshtein)
   :components ((:file "package")
+	       (:file "utils")
 	       (:file "backend-api")
 	       (:file "mem-backend")
 	       ;(:file "server")
                ;(:file "m-server")
-	       )
+	       (:module "ssl"
+			:components ((:static-file "server.crt")
+				     (:static-file "server.key"))))
   :description "m-server is a CL server for the Socialunch app."
   :author "Christoph Finkensiep <ch.finkensiep@freenet.de>"
   :license "Copyright (c) 2012 Christoph Finkensiep
