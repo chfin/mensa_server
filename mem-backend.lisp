@@ -12,7 +12,9 @@
    (enquiries :initform nil
 	      :accessor enqs)
    (contacts :initform nil
-	     :accessor conts)))
+	     :accessor conts)
+   (locations :initform (make-hash-table)
+	      :accessor locs)))
 
 ;;; holdups
 (defun expire-signals (backend)
@@ -109,6 +111,8 @@
 	      (list (cons :name (car s)) (cons :id (cdr s))))
 	    sorted)))
 
+;;; contacts
+
 (defun contact-pair (id1 id2)
   (let ((i1 (parse-integer id1))
 	(i2 (parse-integer id2)))
@@ -158,3 +162,56 @@
   (let ((enq (cons (parse-integer user-id)
 		   (parse-integer contact-id))))
     (setf (enqs backend) (delete enq (enqs backend) :test #'equal))))
+
+;;; locations
+;;location: id => (place ((:x . x) (:y . y)) exptime)
+
+(defun print-loc (key val)
+  (let ((place (car val))
+	(pos (json:encode-json-to-string (cadr val)))
+	(exp (caddr val)))
+    (format t "User #~a, sits at pos ~a in the ~a until ~a.~%"
+	    key pos place exp)))
+
+(defun describe-locs (backend)
+  (maphash #'print-loc (locs backend)))
+
+(defun expire-locs (backend)
+  (let ((now (get-universal-time)))
+    (maphash (lambda (key loc)
+	       (when (< (caddr loc) now)
+		 (remhash key (locs (backend)))))
+	     (locs backend))))
+
+(defun find-loc (backend id)
+  (let ((loc (gethash id (locs backend))))
+    (list (car loc) (cadr loc))))
+
+(defmethod get-locations ((backend plain-backend) user-id place)
+  (expire-locs backend)
+  (let* ((id (parse-integer user-id))
+	 (cs (get-contacs backend user-id)))
+    (mapcan (lambda (c)
+	      (let ((loc (find-loc backend c)))
+		(when (equal place (car loc))
+		  (list (cons :id c)
+			(cons :loc (cadr loc))))))
+	    cs)))
+
+(defmethod set-location ((backend plain-backend) user-id pos place duration)
+  (let ((id (parse-integer user-id))
+	(p (json:decode-json-from-string pos))
+	(dur (parse-integer duration)))
+    (setf (gethash id (locs backend))
+	  (list place p (+ dur (get-universal-time))))))
+
+(defmethod get-location ((backend plain-backend) user-id)
+  (expire-locs backend)
+  (let* ((id (parse-integer user-id))
+	 (loc (find-loc backend id)))
+    (when loc
+      (list (cons :pl (car loc))
+	    (cons :pos (cadr loc))))))
+
+(defmethod remove-location ((backend plain-backend) user-id)
+  (remhash (parse-integer user-id) (locs backend)))

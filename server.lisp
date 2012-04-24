@@ -2,7 +2,8 @@
 
 (in-package #:m-server)
 
-(defvar *backend* (make-instance 'plain-backend))
+(defvar *backend* (make-instance 'plain-backend)
+  "The default backend.")
 
 (defget echo (p)
   (format nil "You said: ~a" p))
@@ -50,6 +51,22 @@
 
 (defget places ()
   (get-places *backend*))
+
+(defget locations (id pw pl)
+  (do-auth (id pw)
+    (get-locations *backend* id)))
+
+(defpost setlocation (id pw pos pl dur)
+  (do-auth (id pw)
+    (set-location *backend* id pos pl dur)))
+
+(defget mylocation (id pw)
+  (do-auth (id pw)
+    (get-location *backend* id)))
+
+(defpost removelocation (id pw)
+  (do-auth (id pw)
+    (remove-location *backend* id)))
 
 ;;; contacts
 

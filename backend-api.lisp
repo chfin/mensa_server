@@ -35,3 +35,8 @@
 (defgeneric get-enquiries (backend user-id))
 (defgeneric accept-enq (backend user-id contact-id))
 (defgeneric refuse-enq (backend user-id contact-id))
+
+(defgeneric get-locations (backend user-id place))
+(defgeneric set-location (backend user-id pos place duration))
+(defgeneric get-location (backend user-id))
+(defgeneric remove-location (backend user-id))
